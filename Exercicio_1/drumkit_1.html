@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Drum Kit</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+
+  <div class="keys">
+    <div data-key="65" class="key">
+      <kbd>A</kbd>
+      <span class="sound">clap</span>
+    </div>
+    <div data-key="83" class="key">
+      <kbd>S</kbd>
+      <span class="sound">hihat</span>
+    </div>
+    <div data-key="68" class="key">
+      <kbd>D</kbd>
+      <span class="sound">kick</span>
+    </div>
+    <div data-key="70" class="key">
+      <kbd>F</kbd>
+      <span class="sound">openhat</span>
+    </div>
+    <div data-key="71" class="key">
+      <kbd>G</kbd>
+      <span class="sound">boom</span>
+    </div>
+    <div data-key="72" class="key">
+      <kbd>H</kbd>
+      <span class="sound">ride</span>
+    </div>
+    <div data-key="74" class="key">
+      <kbd>J</kbd>
+      <span class="sound">snare</span>
+    </div>
+    <div data-key="75" class="key">
+      <kbd>K</kbd>
+      <span class="sound">tom</span>
+    </div>
+    <div data-key="76" class="key">
+      <kbd>L</kbd>
+      <span class="sound">tink</span>
+    </div>
+  </div>
+
+  <audio data-key="65" src="sounds/clap.wav"></audio>
+  <audio data-key="83" src="sounds/hihat.wav"></audio>
+  <audio data-key="68" src="sounds/kick.wav"></audio>
+  <audio data-key="70" src="sounds/openhat.wav"></audio>
+  <audio data-key="71" src="sounds/boom.wav"></audio>
+  <audio data-key="72" src="sounds/ride.wav"></audio>
+  <audio data-key="74" src="sounds/snare.wav"></audio>
+  <audio data-key="75" src="sounds/tom.wav"></audio>
+  <audio data-key="76" src="sounds/tink.wav"></audio>
+
+<script>
+    
+    function playSound(e) {
+
+        //contante audio criada, selecionando o valor do data-key do elemento audio de acordo com a tecla selecionada
+        const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+
+        //constante key criada para adicionar a animação ao teclar
+        const key = document.querySelector(`.key[data-key="${e.keyCode}"]`); 
+        
+        // caso nenhum elemento for encontrado na tecla selecionada a função se encerra.
+        if(!audio) return;
+
+        //para tocar o audio quando a tecla correspondente for selecionada
+        audio.play();
+
+        //se colocar so o comando acima e eu selecionar a tecla varias vezes seguidas o proximo som so irá iniciar ao fim do som anterior, para isso nao acontecer e eu poder selecionar no momento que quiser, coloca:
+        audio.currentTime = 0;
+
+        //adicionando animação nas divs key
+        key.classList.add('playing');
+    }
+
+        //função para remover a animação de transição
+    function removeTransition(e) {
+
+        //se o evento retornar algum elemento com propriedade diferente de transform parar a função aqui
+        if(e.propertyName !== 'transform') return;  
+
+        //o valor do this vem de acordo com o que chama a função (no caso, key, que está chamando a função abaixo)
+        this.classList.remove('playing');
+    }
+
+    //criando uma constante que armazena todos os elementos com a class key
+    const keys = document.querySelectorAll('.key');
+    //fazendo um forEach que passa por todos os elementos que tiveram transition e adicionando a função removeTransition
+    keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+    
+
+    window.addEventListener('keydown', playSound);
+
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Understanding JavaScript's Capture</title>
+</head>
+<body class="bod">
+
+  <div class="one">
+    <div class="two">
+      <div class="three">
+      </div>
+    </div>
+  </div>
+
+<style>
+  html {
+    box-sizing: border-box;
+  }
+  
+  *, *:before, *:after { 
+    box-sizing: inherit; 
+  }
+
+  div {
+    width: 100%;
+    padding: 100px;
+  }
+
+  .one {
+    background: thistle;
+  }
+
+  .two {
+    background: mistyrose;
+  }
+
+  .three {
+    background: coral;
+  }
+</style>
+
+<button></button>
+<script>
+
+    //pegar todas as divs e armazenar em uma constante
+    const divs = document.querySelectorAll('div');
+    const button = document.querySelector('button');
+
+    //essa função vai retornar o nome das classes do elemento q usá-la
+    function logText(e) {
+        console.log(this.classList.value);
+        e.stopPropagation();
+        //Existe também o metodo chamado stopPropagation, este irá impedir que ocorra o que foi explicado abaixo, e então ao clicar no three apenas ele será retornado no console
+    }
+
+    //passar por todas as divs, e quando ocorrer o evento do click vai rodar a função logText
+    divs.forEach(div => div.addEventListener('click', logText));
+
+    /* ***
+        Ao fazer isso e clicar na div three, o console irá retornar a div one e two também, mas por que? Ao clicar no three, o browser interpreta que vc passou também pelos elementos que estão em volta dele, no caso as divs one e two, ele lê o evento de cima para baixo e partir dai ele da um trigger por onde passou, e isso acontece da onde vc clicou pra cima (bubbling), por isso o console retorna 'three, two, one'
+
+        Depois de usar o método stopPropagation() na função o bubbling nao acontece mais e o console retorna apenas o three    
+     *** */
+
+
+
+    /* divs.forEach(div => div.addEventListener('click', logText, {
+         capture:true
+     }));
+    */
+
+    //Ao adicionar esse terceiro parametro na função, ele fará com que o trigger seja de cima para onde vc clicou, então irá retornar 'one two three'
+
+    /* divs.forEach(div => div.addEventListener('click', logText, {
+         capture:true,
+         once: true
+     }));
+    */
+
+    //Existe também o 'once' que faz com que a função chamada ocorra apenas uma vez, então nesse caso: ao dar um click no box ele retornará three no console e se clicar de novo nada mais irá acontecer, diferente do que acontecia antes, onde o resultado do console aparecia independente de quantas vezes vc clicava (se clicasse 5 vezes no three, o console ia retortar 5 vezes a classe three).
+
+    //Outro exemplo com once é para um botao, por exemplo de checkout, onde vc quer que o cliente clique apenas uma vez
+
+    button.addEventListener('click', () => {
+        console.log('Click!!!');
+    }, {
+        once: true
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Reference VS Copy</title>
+</head>
+<body>
+
+  <script>
+    // Diferenças entre referenciar e copiar um array e um objeto
+
+    // comece com strings, numbers e booleans
+        
+        let age  = 100;
+        let age2 = age;
+        console.log(age, age2);
+        age = 200;
+        console.log(age, age2);
+
+        let name = 'Gabi';
+        let name2 = name;
+        console.log(name, name2);
+        name = 'Gabriela';
+        console.log(name, name2);
+
+    // Suponha que nós temos um Array
+
+    const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+
+    // e nós queremos fazer uma cópia deste.
+
+    const team = players;
+
+    console.log(players, team);
+
+    // Você pode pensar que nós podemos fazer algo assim para alterar um dos valores do Array que nós copiamos:
+
+    team[3] = 'Lux';
+
+    /*Porém ao alterar o valor do elemento na terceira posição do Team, ele também altera no array Players, pois na verdade Team é apenas uma referencia do array Players*/
+
+    // Como consertar isso? 
+    //Fazendo uma cópia
+    const team2 = players.slice();
+    
+
+    // ou criando um novo array e concatenando o antigo neste
+    const team3 = [].concat(players);
+
+    //ou usando ES6 Spread
+
+    const team4 = [...players];
+    team4[3] = 'heeeeeello';
+    console.log(team4);
+
+    const team5 = Array.from(players);
+
+    // agora ao atualizar algum valor dentro do novo array, o original não é alterado
+
+    // A mesma coisa vale para objetos, vamos supor que nos temos um objeto Person
+
+    // Objeto
+    const person = {
+      name: 'Wes Bos',
+      age: 80
+    };
+
+    // e fazemos uma copia e adicionamos um atributo
+    const captain = person;
+    captain.number = 99;
+
+    /*Ao fazer isso acontece a mesma coisa do array, ao inves de fazer uma copia, captain está referenciando o objeto person e ao atribuir number 99 para captain, ambos objetos ficam com esse atributo*/
+
+    // Como fazer uma copia então?
+    /*Para fazer uma cópia e alterar um atributo do objeto ou adicionar um novo atributo como tentamos a cima, é necessario fazer o seguinte: */
+    const cap2 = Object.assign({}, person, {number: 99, age: 12});
+    console.log(cap2);
+
+    // Também é possivel usar o ...spread do ed6 para objetos
+    const cap3 = {...person};
+
+    // Importante: O que foi passado acima serve para copiar apenas o primeiro nivel de um objeto (tanto para arrays e objetos) . lodash tem um metodo de cloneDeep mas é necessario pensar duas vezes antes de usá-lo.
+    const gab = {
+        name: 'Gabi',
+        age: 20,
+        social: {
+            twitter: '@gabevazz',
+            facebook: 'gabevazz'
+        }
+    }
+
+    console.clear();
+    console.log(gab);
+ 
+    const dev = Object.assign({}, gab);
+    //Ao fazer isso, é feita uma copia do objeto, porem o objeto copiado (gab) tem mais de um nivel (social), e essa copia nao suporta mais de um nivel, por isso se a gente alterar o twitter no dev, ele tambem sera alterado no gab. Portanto é necessario clonar o objeto, para isso, primeiro é necessario verificar se é realmente necessario clonar esse objeto, se sim, uma forma de fazer é usando JSON 
+    const dev2 = JSON.parse(JSON.stringify(gab));
+    //O que acontece no codigo acima?
+    //Primeiro ele pega o objeto gab e transforma em string ( JSON.stringify(gab) ) e logo após ter pego essa string ele transforma de volta em um objeto ( JSON.parse() )
+  </script>
+
+</body>
+</html>
