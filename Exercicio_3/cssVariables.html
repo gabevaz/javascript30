@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoped CSS Variables and JS</title>
+</head>
+<body>
+  <h2>Atualizando variáveis de CSS com <span class='hl'>JS</span></h2>
+
+  <div class="controls">
+    <label for="spacing">Espaçamento:</label>
+    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+
+    <label for="blur">Blur:</label>
+    <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
+
+    <label for="base">Cor base:</label>
+    <input id="base" type="color" name="base" value="#fff">
+  </div>
+
+  <img src="./pug.jpg">
+
+  <style>
+
+    /*Declarar variáveis e setar valores default para elas*/
+    :root{
+        --base:#000;
+        --spacing:10px;
+        --blur:10px;
+    }
+
+    img{
+        max-width: 490px;
+        /*para chamar as variaveis:*/
+        padding: var(--spacing);
+        background: var(--base);
+        filter: blur(var(--blur));
+    }
+
+    .hl{
+        color: var(--base);
+    }
+
+    /*
+      misc styles, nothing to do with CSS variables
+    */
+
+    body {
+      text-align: center;
+      background: #000;
+      color: white;
+      font-family: 'helvetica neue', sans-serif;
+      font-weight: 100;
+      font-size: 50px;
+    }
+
+    h2{
+        font-size: 55px;
+    }
+
+    label{
+        font-size: 35px;
+    }
+
+    .controls {
+      margin-bottom: 50px;
+    }
+
+    input {
+      width: 100px;
+    }
+
+  </style>
+
+  <script>
+
+    const inputs = document.querySelectorAll('.controls input');
+
+    function handleUpdate(){
+        //armazenar em uma constante o valor do data-sizing atribuido nos inputs, || '' foi adicionado para nao dar erro na cor que nao possui o atributo
+        const suffix = this.dataset.sizing || '';
+        //foi adicionado um atributo name nos inputs com o mesmo nome das variaveis de css criadas, a partir disso entao vai pegar o valor do name do atributo que foi pego na função (no caso, input) e colocar na classe css com o mesmo nome e concatenar o suffix 
+        document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+    }
+
+    //passar pelos inputs e checar quando tiver alguma mudança
+    inputs.forEach(input =>input.addEventListener('change', handleUpdate));
+
+    //passar pelos inputs e verificar quando/onde passou o mouse
+    inputs.forEach(input =>input.addEventListener('mouseover', handleUpdate));
+
+  </script>
+
+</body>
+</html>
