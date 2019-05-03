@@ -137,7 +137,15 @@
           this.classList.toggle('open');
       }
 
+      //essa função pega o nome da propriedade que está sendo alterada (no caso flex) e faz o toggle nos elementos que tiverem essa propriedade
+      function toggleActive(e) {
+        if(e.propertyName.includes('flex')) {
+          this.classList.toggle('open-active');
+        }
+      }
+
       panels.forEach(panel => panel.addEventListener('click', toggleOpen));
+      panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
 
   </script>
 
