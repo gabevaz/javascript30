@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<script>
+    //primeira coisa a se fazer é pegar o canvas e armazenar em uma variavel 
+    const canvas = document.querySelector('#draw');
+
+    //depois precisamos criar uma variavel onde as coisas serão desenhadas no canvas (todo canvas precisa de um context, as coisas nao sao desenhadas direto no canvas no html e sim no context, esse context pode ser 2d ou 3d)
+    const ctx = canvas.getContext('2d');
+
+    //a seguir precisamos determinar o tamanho do canvas, nesse caso será do tamanho da tela
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    //agora escolher o estilo das linhas que serão desenhadas
+    //primeiro a cor
+    ctx.strokeStyle = '#BADA55';
+    //e se as linhas terão pontas quadradas (square) ou arredondadas (round)
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 30;
+
+    //esse metodo atribui uma caracteristica quando a linha sobrepoe outra, nesse caso ficando preto, mas tem varias possibilidades
+    ctx.globalCompositeOperation = 'multiply';
+
+    //criar uma flag para identificar quando o mouse estiver clicado, pois é assim que irá desenha
+    let isDrawing = false;
+
+    //identificar onde começa e onde termina a linha
+    let lastX = 0;
+    let lastY = 0;
+
+    //variavel para mudar de cor conforme desenha
+    let hue = 0;
+
+    //variavel para direção / grossura da linha
+    let direction = true;
+
+    //criar a função de desenhar que será chamada sempre que mexermos o mouse em cima do canvas
+    function draw(e) {
+       //se a pessoa nao estiver desenhando, ou seja o mouse nao estiver clicado, vai dar um return e a função vai parar aqu
+       if(!isDrawing) return;
+
+       console.log(e);
+
+       //setando a cor da linha seguindo padrao https://mothereffinghsl.com/
+       ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+       //escolher onde o desenho irá começar (lembrar q sempre o desenho é feito no context)
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+       //e para onde ele vai (o offset é identificado pelo browser)
+       ctx.lineTo(e.offsetX, e.offsetY);
+       //desenhar a linha
+       ctx.stroke();
+
+       //atualizar os valores das variaveis lastX e lastY para que o desenho nao comece sempre no mesmo lugar
+       //lastX = e.offsetX;
+       //lastY = e.offsetY;
+       //outro jeito de atualizar essas variaveis em uma linha só:
+       [lastX, lastY] = [e.offsetX, e.offsetY];
+
+       //para ir adicioando um numero na variavel conforme for desenhando 
+       hue++;
+       //quando o numero passar de 360 voltar pro 0
+       if(hue >= 360) {
+           hue = 0;
+       }
+
+       //verificar se a grossura da linha for maior q 100 ou menor que 1, a variavel direction vai trocar de direção, ou seja se estiver true vai virar false e vice versa
+       if(ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+           direction = !direction;
+       }
+
+       //se direction for verdadeiro a linha vai aumentar, se nao vai diminuir
+       if(direction) {
+           ctx.lineWidth++;
+       }else{
+           ctx.lineWidth--;
+       }
+    }
+
+    //identificar quando o mouse tiver clicado e transformar a variavel isDrawing para true
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        //atualizar os valores de X e Y aqui para que nao comece sempre do 0
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+
+    //criar a chamada a partir do evento de mousemove
+    canvas.addEventListener('mousemove', draw);
+    
+    //atribuir falso quando nao tiver clicado
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    //atribuir falso caso a pessoa tire o mouse do canvas e volte
+    canvas.addEventListener('mouseout', () => isDrawing = false);
+
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="City or State">
+    <ul class="suggestions">
+      <li>Filter for a city</li>
+      <li>or a state</li>
+    </ul>
+  </form>
+<script>
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+//primeira coisa a se fazer é criar um arry para armazenar os dados do link acima
+const cities = [];
+
+//depois disso nos precisamos pegar os dados no link, para isso podemos usar um metodo que chama fetch, esse metodo ira retornar uma promise, que é como se fosse algo que irá retornar a partir do fetch, para trabalhar com uma promise usa-se o .then() que pega uma 'bolha' de dados, depois disso, precisamos transformar esses dados em um json, q retornará uma promise e usar o then novamente para acessa-la e pegar os dados. Agora precisamos passar esses dados para a const Cities, se fosse uma variavel poderiamos colocar direto 'data = cities' porém como é uma constante nos vamos usar push junto com o spread do es6 para adicionar os itens do array e evitar q fique um array dentro de outro
+fetch(endpoint).then(blob => blob.json()).then(data => cities.push(...data))
+
+//agora vamos criar uma função que combina o que foi pesquisado e o que está no array para filtrar e trazer o resultado
+function findMatches(wordToMatch, cities) {
+    return cities.filter(place => {
+        //aqui vamos descobrir se o estado ou cidade buscada condiz com algum valor do array
+        //primeiro criar uma variavel que vai amazenar o valor que foi digitado
+        const regex = new RegExp(wordToMatch, 'gi');
+        //retornar se a cidaed ou o estado combina com o que foi buscado
+        return place.city.match(regex) || place.state.match(regex)
+    });
+}
+
+//colocar aqui uma função pronta para adicionar virgulas nos numeros da população
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+//agora vamos criar uma função de exibição
+function displayMatches() {
+    //usar a função findMatches passando a palavra digitada e comparando com o array de cities
+    const matchArray = findMatches(this.value, cities);
+    //agora fazer um map para pegar o array de cidades encontradas e a partir disso retornar um html com eles, e usar o join para transformar esse array em string
+    const html = matchArray.map(place => {
+        //aqui antes do return vamos criar uma variavel regex para pegar o que foi digitado
+        const regex = new RegExp(this.value, 'gi');
+        //a partir do que foi digitado vamos substituir a parte da palavra encontrada por um span com a classe hl e o contexo de busca, q deixará o que a pessoa buscou em destaque nos resultados
+        //por exemplo, caso a pessoa busque 'new' essa palavra irá ficar marcada com um fundo no resultado new york
+        const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+        const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+        return `
+            <li>
+                <span class="name">${cityName}, ${stateName}</span>
+                <span class="population">${numberWithCommas(place.population)}</span>
+            </li>
+        `;
+    }).join('');
+    suggestions.innerHTML = html;
+}
+
+//selecionar o input e as ul de sugestoes
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+//identificar os eventos ao clicar fora no input e enquando digita
+searchInput.addEventListener('change', displayMatches);
+searchInput.addEventListener('keyup', displayMatches);
+
+</script>
+</body>
+</html>
