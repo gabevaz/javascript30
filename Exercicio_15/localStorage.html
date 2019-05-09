@@ -30,8 +30,8 @@
     const addItems = document.querySelector('.add-items');
     //ul onde os items vao estar
     const itemsList = document.querySelector('.plates');
-    //array dos items da lista
-    const items = [];
+    //array dos items da lista, caso ja tenha itens vai pegar da lista do local storage, se nao vem um array vazio
+    const items = JSON.parse(localStorage.getItem('items')) || [];
 
     //função que vai adicionar os items na lista
     function addItem(e) {
@@ -39,7 +39,7 @@
         e.preventDefault();
         //pegar o que foi digitado no input
         const text = (this.querySelector('[name=item')).value;
-        //criar um objeto para armazenar o item digitado
+        //criar um objeto para armazenar o item digitado e o done para validar se estará checado ou nao
         const item = {
             text,
             done: false
@@ -48,6 +48,8 @@
         items.push(item);
         //chamar a função de popular a lista 
         populateList(items, itemsList);
+        //setar o array dos items no localStorage, usar JSON.stringify pra retornar o objeto como uma string
+        localStorage.setItem('items', JSON.stringify(items));
         //reset é um função do form q vai limpar o input depois de dar submit
         this.reset();
     }
@@ -56,18 +58,42 @@
     //poderia usar as constantes ja criadas itemsList e o array items, porem dessa forma a função fica mais flexivel permitindo ser usada em outras listas 
     function populateList(plates = [], platesList) {
         //fazer um map no array plates e pegar o item e o indice e jogar em um html
+        //depois do id do input será feito um if, se o atributo done do item for true o input será checado, se nao nao
         platesList.innerHTML = plates.map((plate, i) => {
             return `
                 <li>
-                    <input type="checkbox" data-index=${i} id="item${i}">
+                    <input type="checkbox" data-index=${i} id="item${i}" ${plate.done ? 'checked' : ''} />
                     <label for="item${i}">${plate.text}</label>
                 </li>
             `;
         }).join('');
     }
 
+    //função para que o checkbox continue checado ao recarregar a pagina
+    function toggleDone(e) {
+      //caso o que tenha sido clicado nao é o input, retornar e para a função
+      if(!e.target.matches('input')) return;
+      //agora ir no clique e trocar o done de false para true
+      //primeiro pegar o elemento que foi clicado
+      const el = e.target;
+      //agora pegar o indice deste
+      const index = el.dataset.index;
+      //e por ultimo inverter a propriedade de done, se estiver false vai ficar true e vice versa
+      items[index].done = !items[index].done;
+      //salvar o que foi feito no localStorage
+      localStorage.setItem('items', JSON.stringify(items));
+      //e rodar populate list para manter a lista exibida atualizada
+      populateList(items, itemsList);
+    }
+
     //ouvir o evento de submit que é quando a pessoa clica no botao de adicionar ou da um enter e chamar a função addItem
     addItems.addEventListener('submit', addItem);
+
+    //ouvir o click na ul plates, pois as <li> podem variar de acordo com o que for adicionado e o evento listener pode nao funcionar, por isso a gentr coloca ele no pai e trata na função
+    itemsList.addEventListener('click', toggleDone);
+
+    //rodar a função de popular a lista quando a pagina carregar, se tiver dados no local storage ja vem populado, se nao, vem em branco
+    populateList(items, itemsList);
 
 </script>
 
