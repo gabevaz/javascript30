@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mouse Shadow</title>
+</head>
+<body>
+
+  <div class="hero">
+    <h1 contenteditable>🔥WOAH!</h1>
+  </div>
+
+  <style>
+  html {
+    color: black;
+    font-family: sans-serif;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+  }
+
+  h1 {
+    text-shadow: 10px 10px 0 rgba(0,0,0,1);
+    font-size: 100px;
+  }
+  </style>
+
+<script>
+    //selecionar a div hero e o h1 dentro da div
+    const hero = document.querySelector('.hero');
+    const text = hero.querySelector('h1');
+    //constante para distancia que a sombra irá percorrer
+    const walk = 500; //500px 
+
+    //criar função da sombra
+    function shadow(e) {
+        //pegar a altura e largura da div hero
+        //const width = hero.offsetWidth;
+        //const height = hero.offsetHeight;
+        //fazendo a mesma coisa de cima mas em uma linha so com es6
+        const { offsetWidth: width, offsetHeight: height } = hero;
+
+        //pegar a altura e largura da onde passou o mouse
+        let { offsetX: x, offsetY: y } = e;
+
+        //mesmo fazendo o mousemove em cima da div pai (hero) quando passa o mouse em cima de um elemento filho o valor do x e y zera, por isso vamos fazer um if, no caso this é o elemento hero e e.target é o alvo no evento, ou seja onde o mouse vai estar passando por cima 
+        if(this !== e.target) {
+            //somar o valor do x ou y da div com o valor que ele vai pegar no elemento filho
+            x = x +  e.target.offsetLeft;
+            y = y + e.target.offsetTop;
+        }
+
+        //agora precisamos definir quao longe a sombra deve ir 
+        //consideramos o walk como 500 e a sombra como 50 e -50 
+        //a conta entao é o tamanho da div * 100 dividido por x/y que é onde o mouse está, menos 50 que é o valor q a sombra terá q ter, e o math round para arredondar os numeros decimais
+        const xWalk = Math.round((x / width * walk) - (walk / 2));
+        const yWalk = Math.round((y / height * walk) - (walk / 2));
+
+        //atribuir os valores para o style, x y blur e cor
+        text.style.textShadow =  `
+            ${xWalk}px ${yWalk}px 0 rgba(255,0,255,0.7),
+            ${xWalk * -1}px ${yWalk}px 0 rgba(0,255,255,0.7),
+            ${yWalk}px ${xWalk}px 0 rgba(0,255,0,0.7),
+            ${xWalk}px ${yWalk * -1}px 0 rgba(0,0,255,0.7)
+        `;
+    }
+
+    //adicionar evento para chamar a função quando ocorre um mousemove na div 
+    hero.addEventListener('mousemove', shadow);
+</script>
+</body>
+</html>
