@@ -12,6 +12,35 @@
 <script>
   window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+  //constante que vai identificar o que foi falado
+  const recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+
+  //criar um p para o que for sendo falado
+  let p = document.createElement('p');
+  //pegar a div onde o p vai
+  const words = document.querySelector('.words');
+  //fazer o append do p na div 
+  words.appendChild(p);
+
+  recognition.addEventListener('result', e => {
+    console.log(e.results);
+    //criar uma constante com os resultados e transformar num array para fazer um map
+    const transcript = Array.from(e.results).map(result => result[0]).map(result => result.transcript).join('');
+
+    //adicionar o contexto do texto no p
+    p.textContent = transcript;
+    //para evitar que quando o que for falado sobrescreva o que ja está na tela faz esse if, que cria um p para cada vez que a pessoa começar a falar
+    if(e.results[0].isFinal) {
+      p = document.createElement('p');
+      words.appendChild(p);
+    }
+    console.log(transcript);
+  });
+
+  recognition.addEventListener('end', recognition.start);
+
+  recognition.start();
 
 </script>
 
