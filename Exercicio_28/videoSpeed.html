@@ -20,9 +20,27 @@
     const bar = speed.querySelector('.speed-bar');
     const video = document.querySelector('.flex');
 
-    speed.addEventListener('mousemove', function(e) {
+    function handleMove(e) {
         //pegar o tamanho da barra e transformar em % 
-    });
+        const y = e.pageY - this.offsetTop;
+        const percent  = y / this.offsetHeight;
+        //determinar as velocidades
+        const min = 0.4;
+        const max = 4;
+        //transformar o valor da porcentagem de decimal para inteiro e arredondar
+        const height = Math.round(percent * 100) + '%';
+        //adicionar o efeito de alterar a altura conforme passa o mouse
+        bar.style.height = height;
+        //alterar os numeros dentro da barra, quando for 0% o playbackRate tem que ser 0.4 e quando for 100% será 4
+        const playbackRate = percent * (max - min) + min;
+        //atribuir os valores numeros a barra, com apenas um decimal e o 'x' no final
+        bar.textContent = playbackRate.toFixed(2) + 'x';
+        //agora precisa aplicar esse valor de playbackRate no video para alterar a velocidade
+        video.playbackRate = playbackRate;
+
+    }
+
+    speed.addEventListener('mousemove', handleMove);
 </script>
 </body>
 </html>
