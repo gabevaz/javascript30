@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Sticky Nav</title>
-  <link rel="stylesheet" href="style-START.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -56,10 +56,19 @@
 <script>
     //selecionar a nav main
     const nav = document.querySelector('#main');
+    //pegar a quantos px a nav está do topo da tela
+    const topOfNav = nav.offsetTop;
 
     //função para deixar a nav fixa
     function fixNav() {
-        
+        //fazer uma condição, onde scrollY identifica o scroll que estamos dando, e caso este seja maior que a altura da nav uma classe será adicionada no body
+        if(window.scrollY >= topOfNav){
+          document.body.style.paddingTop = nav.offsetHeight + 'px';
+          document.body.classList.add('fixed-nav');
+        }else {
+          document.body.style.paddingTop = 0;
+          document.body.classList.remove('fixed-nav');
+        }
     }
 
     //chamar a função em todas as paginas quando da um scroll
